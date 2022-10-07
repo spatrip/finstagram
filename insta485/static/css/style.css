@@ -1,0 +1,91 @@
+body {
+  padding-top: 50pt;
+  padding-left: 100pt;
+  padding-right: 100pt;
+}
+
+.vr {
+  margin: 2px;
+  width: 2px;
+}
+
+.top {
+  display: flex;
+  padding-bottom: 30pt;
+}
+
+.logo {
+  width: 70%;
+}
+
+.explore {
+  display: flex;
+  width: 40%;
+  justify-content: flex-end;
+}
+
+.explore a {
+  align-self: center;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.divide {
+  padding-bottom: 30pt;
+}
+
+.horrule {
+  opacity: 0.7;
+}
+
+.card {
+  align-self: center;
+}
+
+.card-header img {
+  margin-right: 7px;
+}
+
+.info {
+  padding-bottom: 30px;
+}
+
+.like-comment {
+  padding: 15px;
+}
+
+.upload {
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.post-thumb {
+  width: 32%;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+}
+
+.follower-card {
+  margin-bottom: 10px;
+}
+
+.follow-button {
+  margin: 5px;
+  align-content: flex-end;
+}
+
+.login-form {
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.delete-acc {
+  background-color: rgb(247, 88, 88);
+  color: white;
+}
+
+.pfp {
+  width: 10%;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+}
