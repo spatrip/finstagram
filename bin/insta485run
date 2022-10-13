@@ -4,7 +4,7 @@ set -Eeuo pipefail
 set -x
 
 
-./bin/insta485db reset
+# ./bin/insta485db reset
 
 export FLASK_ENV=development
 export FLASK_APP=insta485
