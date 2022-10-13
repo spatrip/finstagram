@@ -16,7 +16,7 @@
 </head>
 
 <body>
-    <div class="top">
+    <!-- <div class="top">
         <div class="logo">
             <a href="/">
                 <img src="/static/images/logo.png" alt="instagram logo" width="55">
@@ -61,7 +61,7 @@
                     <input type="submit" name="unlike" value="unlike" />
                 </form>
                 {% else %}
-                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') --
                 <form action="{{url_for('update_like', target='/')}}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="operation" value="like" />
                     <input type="hidden" name="postid" value="{{ post.postid }}" />
@@ -69,7 +69,7 @@
                 </form>
                 {% endif %}
                 <br>
-                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') --
                 <form action="{{url_for('update_comment', target='/')}}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="operation" value="create" />
                     <input type="hidden" name="postid" value="{{ post.postid }}" />
@@ -79,7 +79,30 @@
             </div>
         </div>
         {% endfor %}
+    </div> -->
+
+
+    <!-- Plain old HTML and jinja2 nav bar goes here -->
+    <div class="top">
+        <div class="logo">
+            <a href="/">
+                <img src="/static/images/logo.png" alt="instagram logo" width="55">
+            </a>
+        </div>
+        <div class="explore">
+            <a href="/explore/"><b>explore</b></a>
+            <div class="vr"></div>
+            <a href="/users/{{ logname }}/"><b>{{ logname }}</b></a>
+        </div>
     </div>
+    <div class="divide">
+        <hr class="horrule">
+    </div>
+    <div id="reactEntry">
+        Loading ...
+    </div>
+    <!-- Load JavaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
 </body>
 
 </html>
