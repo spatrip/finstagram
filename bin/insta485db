@@ -68,9 +68,14 @@ case $1 in
       FILENAME=`echo "$FILENAMES" | ${SHUF} -n1 | awk '{$1=$1;print}'`
       OWNER="awdeorio"
       sqlite3 -echo -batch ${DB_FILENAME} "INSERT INTO posts(filename, owner) VALUES('${FILENAME}','${OWNER}');"
+<<<<<<< HEAD
     done
     ;;
   *)
+=======
+  done
+  *
+>>>>>>> 98d673a77450ad6fd134dfd73833d7c9cfa9a3c5
     usage
     exit 1
     ;;
