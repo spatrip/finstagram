@@ -55,22 +55,6 @@ def get_ten_posts():
 
     # AUTHENTICATION OVER
 
-    # Keep this for rememebering
-    # postid_lte = 10
-    # size = 10
-    # page = -1
-    # postid_lte = flask.request.args.get('postid_lte')
-    size = flask.request.args.get("size", default=10, type=int)
-    page = flask.request.args.get("page", default=1, type=int)
-    # size or page can't be negative (test case)
-    if size < 0 or page < 0:
-        flask.abort(400)
-    # here we can do if not size size eq 10
-    # postid_lte is largest post in the page that were working on
-    # size
-    # if not postid_lte:
-    #     postid_lte =
-
     # Connect to database
     connection = insta485.model.get_db()
     # Query database
@@ -89,23 +73,10 @@ def get_ten_posts():
 
     postinfo = []
     for userid in feed_post_owners_list:
-        cur = -1
-        # keep this
-        # if size:
-        #     cur = connection.execute(
-        #     "SELECT postid, owner, filename, created "
-        #     "FROM posts "
-        #     "WHERE owner = ? ",
-        #     "LIMIT = ? "
-        #     # "ORDER BY postid DESC ",
-        #     (userid, size, )
-        # )
-        # else:
         cur = connection.execute(
             "SELECT postid, owner, filename, created "
             "FROM posts "
             "WHERE owner = ? ",
-            # "ORDER BY postid DESC ",
             (userid, )
         )
 
@@ -118,7 +89,48 @@ def get_ten_posts():
     sorted_posts = sorted(
         postinfo, key=operator.itemgetter('postid'), reverse=True)
     # print("sorted posts: ", sorted_posts)
-    top_ten = sorted_posts[:10]
+
+    # make sure we are getting the right ten posts in  the page
+    # size exact same thing except the range is now the size according to the page were on
+    # page isnt specified then 0
+    # if page is specified then its prettty straight forward do range according to the page
+    # postid_lte if specified then nothing changes
+    # if isnt specified then postid_lte will change according to the page were on and the size (highest of these posts)
+    # making sure the post is returned is less than postid_lte
+    # postid_lte = flask.request.args.get('postid_lte', default = len(sorted_posts), type=int)
+    # size = flask.request.args.get("size", default=10, type=int)
+    # page = flask.request.args.get("page", default=0, type=int)
+    # # size or page can't be negative (test case)
+    # if size < 0 or page < 0:
+    #     flask.abort(400)
+    # # printid_lte  
+    # end = postid_lte # upto not included
+    # start = end - size
+    # # if 30 remember that page 3 will have 0 posts, page 2 will still have 10 posts
+    # next = ''
+    # if page != 0:
+    #     end = end - (page * size)
+    #     start = end - size
+    # if size != 10:
+    #     end = start + size
+
+    # if end - start < size:
+    #     next = ''
+    # else:
+    #     page = page + 1
+    #     next = 'size=10&page=' + str(page) + '&postid_lte=' + str(end - 1) + "/"
+        # page - page*size
+
+    start = 0
+    end = 10
+
+
+    if page != 0:
+        start = start + (page * size)
+    
+
+    # top_ten = sorted_posts[start:end]
+    top_ten = sorted_posts[0:10]
     # print(top_ten)
     results = []
     for post in top_ten:
@@ -129,7 +141,7 @@ def get_ten_posts():
         )
 
     context = {
-        "next": "",
+        "next": len(sorted_posts),
         "results": results,
         "url": "/api/v1/posts/"
     }
