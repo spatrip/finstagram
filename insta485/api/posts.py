@@ -13,6 +13,19 @@ def get_ten_posts():
     else:
         user = flask.session['username']
 
+    # Keep this for rememebering
+    # postid_lte = 10
+    # size = 10
+    # page = -1
+    # postid_lte = flask.request.args.get('postid_lte')
+    # size = flask.request.args.get("size", default=<some number>, type=int
+    # page = flask.request.args.get("page", default=<some number>, type=int
+    # here we can do if not size size eq 10
+    # postid_lte is largest post in the page that were working on
+    # size
+    # if not postid_lte:
+    #     postid_lte =
+
     # Connect to database
     connection = insta485.model.get_db()
     # Query database
@@ -31,6 +44,18 @@ def get_ten_posts():
 
     postinfo = []
     for userid in feed_post_owners_list:
+        cur = -1
+        # keep this
+        # if size:
+        #     cur = connection.execute(
+        #     "SELECT postid, owner, filename, created "
+        #     "FROM posts "
+        #     "WHERE owner = ? ",
+        #     "LIMIT = ? "
+        #     # "ORDER BY postid DESC ",
+        #     (userid, size, )
+        # )
+        # else:
         cur = connection.execute(
             "SELECT postid, owner, filename, created "
             "FROM posts "
@@ -38,6 +63,9 @@ def get_ten_posts():
             # "ORDER BY postid DESC ",
             (userid, )
         )
+        
+        
+
         info = cur.fetchall()
         # print("info: ", info)
 
