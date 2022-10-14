@@ -1,4 +1,5 @@
 """REST API for posts."""
+import hashlib
 import operator
 import flask
 import insta485
@@ -6,20 +7,64 @@ import insta485
 
 @insta485.app.route('/api/v1/posts/')
 def get_ten_posts():
-    """Returns 10 newest posts."""
+    """Return 10 newest posts."""
+    # AUTHENTICATION BEGIN
 
-    if 'username' not in flask.session:
-        return flask.abort(403)
+    if flask.request.authorization:
+        user = flask.request.authorization['username']
+        print("http auth user: ", user)
+        password = flask.request.authorization['password']
+
+        # Password salting and hashing
+        algorithm = 'sha512'
+        salt = 'a45ffdcc71884853a2cba9e6bc55e812'
+        # uuid.uuid4().hex
+        hash_obj = hashlib.new(algorithm)
+        password_salted = salt + password
+        hash_obj.update(password_salted.encode('utf-8'))
+        password_hash = hash_obj.hexdigest()
+        password_db_string = "$".join([algorithm, salt, password_hash])
+
+        # Connect and query database
+        connection = insta485.model.get_db()
+        cur = connection.execute(
+            "SELECT password "
+            "FROM users "
+            "WHERE username = ?",
+            (user, )
+        )
+
+        # Check if correct password
+        pwd = cur.fetchone()
+
+        if pwd is None:
+            print("no pwd found")
+            flask.abort(403)
+        elif pwd['password'] == password_db_string:
+            # authenticated
+            print("User Authenticated")
+        else:
+            print("incorrect pwd")
+            flask.abort(403)
+
     else:
+        if 'username' not in flask.session:
+            return flask.abort(403)
+        # else:
         user = flask.session['username']
+
+    # AUTHENTICATION OVER
 
     # Keep this for rememebering
     # postid_lte = 10
     # size = 10
     # page = -1
     # postid_lte = flask.request.args.get('postid_lte')
-    # size = flask.request.args.get("size", default=<some number>, type=int
-    # page = flask.request.args.get("page", default=<some number>, type=int
+    size = flask.request.args.get("size", default=10, type=int)
+    page = flask.request.args.get("page", default=1, type=int)
+    # size or page can't be negative (test case)
+    if size < 0 or page < 0:
+        flask.abort(400)
     # here we can do if not size size eq 10
     # postid_lte is largest post in the page that were working on
     # size
@@ -63,8 +108,6 @@ def get_ten_posts():
             # "ORDER BY postid DESC ",
             (userid, )
         )
-        
-        
 
         info = cur.fetchall()
         # print("info: ", info)
@@ -80,7 +123,10 @@ def get_ten_posts():
     results = []
     for post in top_ten:
         results.append(
-            {"postid": post['postid'], "url": "/api/v1/posts/{}/".format(post['postid'])})
+            {"postid": post['postid'],
+             "url": "/api/v1/posts/" + str(post['postid']) + "/"
+             }
+        )
 
     context = {
         "next": "",
@@ -90,14 +136,55 @@ def get_ten_posts():
     return flask.jsonify(**context)
 
 
-@insta485.app.route('/api/v1/posts/<int:postid>/')
+@ insta485.app.route('/api/v1/posts/<int:postid>/')
 def get_post(postid):
-    """Returns post information"""
+    """Return post information."""
+    # AUTHENTICATION BEGIN
 
-    if 'username' not in flask.session:
-        return flask.abort(403)
+    if flask.request.authorization:
+        user = flask.request.authorization['username']
+        print("http auth user: ", user)
+        password = flask.request.authorization['password']
+
+        # Password salting and hashing
+        algorithm = 'sha512'
+        salt = 'a45ffdcc71884853a2cba9e6bc55e812'
+        # uuid.uuid4().hex
+        hash_obj = hashlib.new(algorithm)
+        password_salted = salt + password
+        hash_obj.update(password_salted.encode('utf-8'))
+        password_hash = hash_obj.hexdigest()
+        password_db_string = "$".join([algorithm, salt, password_hash])
+
+        # Connect and query database
+        connection = insta485.model.get_db()
+        cur = connection.execute(
+            "SELECT password "
+            "FROM users "
+            "WHERE username = ?",
+            (user, )
+        )
+
+        # Check if correct password
+        pwd = cur.fetchone()
+
+        if pwd is None:
+            print("no pwd found")
+            flask.abort(403)
+        elif pwd['password'] == password_db_string:
+            # authenticated
+            print("User Authenticated")
+        else:
+            print("incorrect pwd")
+            flask.abort(403)
+
     else:
+        if 'username' not in flask.session:
+            return flask.abort(403)
+        # else:
         user = flask.session['username']
+
+    # AUTHENTICATION OVER
 
     connection = insta485.model.get_db()
     cur1 = connection.execute(
@@ -107,7 +194,10 @@ def get_post(postid):
         (postid, )
     )
     res1 = cur1.fetchone()
-    # print(res1)
+
+    # postid does not exist
+    if res1 is None:
+        flask.abort(404)
 
     var = res1['owner']
     cur2 = connection.execute(
@@ -133,15 +223,19 @@ def get_post(postid):
         (postid, )
     )
     res4 = cur4.fetchall()
-    listOfComments = []
+    list_of_comments = []
     for entry in res4:
-        listOfComments.append({"commentid": entry['commentid'],
-                              "lognameOwnsThis": user == entry['owner'],
-                               "owner": entry['owner'],
-                               "ownerShowUrl": "/users/{}/".format(entry['owner']),
-                               "text": entry['text'],
-                               "url": "/api/v1/comments/{}/".format(entry['commentid'])
-                               })
+        list_of_comments.append({"commentid": entry['commentid'],
+                                 "lognameOwnsThis": user == entry['owner'],
+                                 "owner": entry['owner'],
+                                 "ownerShowUrl": "/users/" +
+                                 entry['owner'] +
+                                 "/",
+                                 "text": entry['text'],
+                                 "url": "/api/v1/comments/" +
+                                 str(entry['commentid']) +
+                                 "/"
+                                 })
 
     cur5 = connection.execute(
         "SELECT COUNT(*), likeid "
@@ -153,12 +247,12 @@ def get_post(postid):
     res5 = cur5.fetchone()
 
     if res5['COUNT(*)'] == 1:
-        likeurl = "/api/v1/likes/{}/".format(res5['likeid'])
+        likeurl = "/api/v1/likes/" + str(res5['likeid']) + "/"
     else:
         likeurl = None
 
-    context = {"comments": listOfComments,
-               "comments_url": "/api/v1/comments/?postid={}/".format(postid),
+    context = {"comments": list_of_comments,
+               "comments_url": "/api/v1/comments/?postid=" + str(postid),
                "created": res1['created'],
                "imgUrl": '/uploads/' + res1['filename'],
                "likes": {"lognameLikesThis": res5['COUNT(*)'] == 1,
@@ -167,9 +261,9 @@ def get_post(postid):
                          },
                "owner": res1['owner'],
                "ownerImgUrl": '/uploads/' + res2['filename'],
-               "ownerShowUrl": "/users/{}/".format(res1['owner']),
-               "postShowUrl": "/posts/{}/".format(postid),
+               "ownerShowUrl": "/users/" + res1['owner'] + "/",
+               "postShowUrl": "/posts/" + str(postid) + "/",
                "postid": postid,
-               "url": "/api/v1/posts/{}/".format(postid)
+               "url": "/api/v1/posts/" + str(postid) + "/"
                }
     return flask.jsonify(**context)

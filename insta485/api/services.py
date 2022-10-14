@@ -6,8 +6,8 @@ import insta485
 @insta485.app.route('/api/v1/')
 def show_services():
     """Return list of services."""
-
-    # use commented code below for aborting when not authenticated in other api calls
+    # use commented code below for aborting
+    # when not authenticated in other api calls
     # if 'username' not in flask.session:
     #     return flask.abort(403)
     # else:
