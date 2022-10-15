@@ -90,47 +90,30 @@ def get_ten_posts():
         postinfo, key=operator.itemgetter('postid'), reverse=True)
     # print("sorted posts: ", sorted_posts)
 
-    # make sure we are getting the right ten posts in  the page
-    # size exact same thing except the range is now the size according to the page were on
-    # page isnt specified then 0
-    # if page is specified then its prettty straight forward do range according to the page
-    # postid_lte if specified then nothing changes
-    # if isnt specified then postid_lte will change according to the page were on and the size (highest of these posts)
-    # making sure the post is returned is less than postid_lte
-    # postid_lte = flask.request.args.get('postid_lte', default = len(sorted_posts), type=int)
-    # size = flask.request.args.get("size", default=10, type=int)
-    # page = flask.request.args.get("page", default=0, type=int)
-    # # size or page can't be negative (test case)
-    # if size < 0 or page < 0:
-    #     flask.abort(400)
-    # # printid_lte  
-    # end = postid_lte # upto not included
-    # start = end - size
-    # # if 30 remember that page 3 will have 0 posts, page 2 will still have 10 posts
-    # next = ''
-    # if page != 0:
-    #     end = end - (page * size)
-    #     start = end - size
-    # if size != 10:
-    #     end = start + size
+    # Pagination Starts
+    page = flask.request.args.get("page", default=0, type=int)
+    size = flask.request.args.get("size", default=10, type=int)
+    if page < 0 or size < 0:
+        flask.abort(400)
 
-    # if end - start < size:
-    #     next = ''
-    # else:
-    #     page = page + 1
-    #     next = 'size=10&page=' + str(page) + '&postid_lte=' + str(end - 1) + "/"
-        # page - page*size
+    postid_lte = flask.request.args.get('postid_lte')
 
-    start = 0
-    end = 10
+    start = 0 + (page * size)
 
+    if postid_lte is not None:
+        print("postid_lte: ", postid_lte)
+        for i, post in enumerate(sorted_posts):
+            if str(post['postid']) == str(postid_lte):
+                start = i + (page * size)
+                break
+    else:
+        postid_lte = sorted_posts[0]['postid']
 
-    if page != 0:
-        start = start + (page * size)
-    
+    end = start + size
 
-    # top_ten = sorted_posts[start:end]
-    top_ten = sorted_posts[0:10]
+    # Pagination should be taken care of
+
+    top_ten = sorted_posts[start:end]
     # print(top_ten)
     results = []
     for post in top_ten:
@@ -139,11 +122,15 @@ def get_ten_posts():
              "url": "/api/v1/posts/" + str(post['postid']) + "/"
              }
         )
-
+    if len(top_ten) < size:
+        next_url = ''
+    else:
+        next_url = '/api/v1/posts/?size=' + str(size) + '&page=' + \
+            str(page + 1) + '&postid_lte=' + str(postid_lte)
     context = {
-        "next": len(sorted_posts),
+        "next": next_url,
         "results": results,
-        "url": "/api/v1/posts/"
+        "url": flask.request.environ['RAW_URI']
     }
     return flask.jsonify(**context)
 
