@@ -6,14 +6,13 @@ import arrow
 import insta485
 
 
-
 @insta485.app.route('/')
 def show_index():
     """Display index page."""
     if 'username' not in flask.session:
         return flask.redirect(flask.url_for('show_login'))
-    else:
-        user = flask.session['username']
+    # else:
+    user = flask.session['username']
 
     # print("logged in user: ", user)
     # Connect to database
@@ -30,15 +29,10 @@ def show_index():
         num_following = 0
     else:
         num_following = 1
-
-
-    # print("fetched users: ", users)
-    # feed_post_owners_list = [user] # keep for project not for public
     feed_post_owners_list = [user]
 
     for row in users:
         feed_post_owners_list.append(row['username2'])
-
     # print(feed_post_owners_list)
     posts = []
     postinfo = []
@@ -57,7 +51,8 @@ def show_index():
             postinfo.append(container)
         # print(postinfo)
 
-        sorted_posts = sorted( postinfo, key=operator.itemgetter('postid'), reverse=True)
+        sorted_posts = sorted(
+            postinfo, key=operator.itemgetter('postid'), reverse=True)
 
     for post in sorted_posts:
         img_path = '/uploads/' + post['filename']
@@ -95,12 +90,10 @@ def show_index():
             "AND postid = ?",
             (user, post['postid'], )
         )
-        liked = likew.fetchone()['COUNT(*)']
+        liked = False
         # print(liked)
-        if liked == 1:
+        if likew.fetchone()['COUNT(*)'] == 1:
             liked = True
-        else:
-            liked = False
 
         posts.append(
             {"postid": post['postid'], "owner": post['owner'],
@@ -121,8 +114,8 @@ def show_login():
     """Display login page."""
     if 'username' in flask.session:
         return flask.redirect(flask.url_for('show_index'))
-    else:
-        return flask.render_template("login.html")
+    # else:
+    return flask.render_template("login.html")
 
 
 @insta485.app.route('/uploads/<path:filename>')
@@ -136,7 +129,8 @@ def download_file(filename):
 # def serve_logo():
 #     """Get logo"""
 #     return flask.send_from_directory(
-#         insta485.app.config['STATIC_IMAGES_FOLDER'], 'logo.png', as_attachment=True
+#         insta485.app.config['STATIC_IMAGES_FOLDER'],
+#           'logo.png', as_attachment=True
 #     )
 
 

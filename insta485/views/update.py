@@ -142,9 +142,10 @@ def delete_post():
     os.remove(path)
     # print('yoohoo', target)
     if target is None:
-        return flask.redirect(flask.url_for('show_user', user_url_slug=res['owner']))
-    else:
-        return flask.redirect(target)
+        return flask.redirect(flask.url_for('show_user',
+                                            user_url_slug=res['owner']))
+    # else:
+    return flask.redirect(target)
 
 
 @insta485.app.route('/following/', methods=['POST'])
@@ -170,8 +171,8 @@ def update_following():
 
     if target is None:
         return flask.redirect(flask.url_for('show_index'))
-    else:
-        return flask.redirect(target)
+    # else:
+    return flask.redirect(target)
 
 
 @insta485.app.route('/users/', methods=['POST'])
@@ -179,7 +180,6 @@ def create_post():
     """Create a new post."""
     fileobj = flask.request.files["file"]
     filename = fileobj.filename
-    #if os.stat(filename).st_size == 0:
     if filename == '':
         flask.abort(400, description="Empty file")
     stem = uuid.uuid4().hex
@@ -199,5 +199,5 @@ def create_post():
     )
     if target is None:
         return flask.redirect(flask.url_for('show_index'))
-    else:
-        return flask.redirect(target)
+    # else:
+    return flask.redirect(target)

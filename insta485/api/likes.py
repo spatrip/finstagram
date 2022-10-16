@@ -15,14 +15,14 @@ def create_like():
         password = flask.request.authorization['password']
 
         # Password salting and hashing
-        algorithm = 'sha512'
+        # algorithm = 'sha512'
         salt = 'a45ffdcc71884853a2cba9e6bc55e812'
         # uuid.uuid4().hex
-        hash_obj = hashlib.new(algorithm)
+        hash_obj = hashlib.new('sha512')
         password_salted = salt + password
         hash_obj.update(password_salted.encode('utf-8'))
         password_hash = hash_obj.hexdigest()
-        password_db_string = "$".join([algorithm, salt, password_hash])
+        password_db_string = "$".join(['sha512', salt, password_hash])
 
         # Connect and query database
         connection = insta485.model.get_db()
@@ -73,12 +73,14 @@ def create_like():
                    }
         return flask.jsonify(**context), 200
     # else:
-    cur2 = connection.execute(
+    # Changed from cur2
+    cur1 = connection.execute(
         "INSERT INTO likes (owner, postid) VALUES ( ? , ? ) "
         "RETURNING likeid",
         (user, postid, )
     )
-    res2 = cur2.fetchone()
+    # Changed from cur2
+    res2 = cur1.fetchone()
     context = {"likeid": res2['likeid'],
                "url": "/api/v1/likes/" + str(res2['likeid']) + "/"
                }

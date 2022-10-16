@@ -56,7 +56,6 @@ def handle_login():
                 # flask.abort(403)
                 return flask.redirect(flask.url_for('show_index'))
                 # return flask.redirect('/')
-            
             return flask.redirect(flask.url_for('show_index'))
             # return flask.redirect(pathlib.Path(target))
         else:

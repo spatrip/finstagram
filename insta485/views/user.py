@@ -24,46 +24,46 @@ def show_user(user_url_slug):
 
     logname_follows_user = log['COUNT(*)'] == 1
 
-    cur2 = connection.execute(
+    cur1 = connection.execute(
         "SELECT fullname, filename "
         "FROM users "
         "WHERE username = ?",
         (user_url_slug, )
     )
-    user_info = cur2.fetchone()
+    user_info = cur1.fetchone()
 
-    cur3 = connection.execute(
+    cur1 = connection.execute(
         "SELECT COUNT(*) "
         "FROM following "
         "WHERE username1 = ?",
         (user_url_slug, )
     )
-    following = cur3.fetchone()
+    following = cur1.fetchone()
 
-    cur4 = connection.execute(
+    cur1 = connection.execute(
         "SELECT COUNT(*) "
         "FROM following "
         "WHERE username2 = ?",
         (user_url_slug, )
     )
-    followers = cur4.fetchone()
+    followers = cur1.fetchone()
 
-    cur5 = connection.execute(
+    cur1 = connection.execute(
         "SELECT COUNT(*) "
         "FROM posts "
         "WHERE owner = ?",
         (user_url_slug, )
     )
-    numposts = cur5.fetchone()
+    numposts = cur1.fetchone()
 
-    cur6 = connection.execute(
+    cur1 = connection.execute(
         "SELECT postid, filename AS 'img_url' "
         "FROM posts "
         "WHERE owner = ?",
         (user_url_slug, )
     )
 
-    posts = cur6.fetchall()
+    posts = cur1.fetchall()
     for post in posts:
         post['img_url'] = '/uploads/' + post['img_url']
     # print(posts)

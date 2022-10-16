@@ -15,14 +15,15 @@ def create_comment():
         password = flask.request.authorization['password']
 
         # Password salting and hashing
-        algorithm = 'sha512'
-        salt = 'a45ffdcc71884853a2cba9e6bc55e812'
+        # algorithm = 'sha512'
+        # salt = 'a45ffdcc71884853a2cba9e6bc55e812'
         # uuid.uuid4().hex
-        hash_obj = hashlib.new(algorithm)
-        password_salted = salt + password
+        hash_obj = hashlib.new('sha512')
+        password_salted = 'a45ffdcc71884853a2cba9e6bc55e812' + password
         hash_obj.update(password_salted.encode('utf-8'))
         password_hash = hash_obj.hexdigest()
-        password_db_string = "$".join([algorithm, salt, password_hash])
+        password_db_string = "$".join(
+            ['sha512', 'a45ffdcc71884853a2cba9e6bc55e812', password_hash])
 
         # Connect and query database
         connection = insta485.model.get_db()
@@ -51,7 +52,7 @@ def create_comment():
             return flask.abort(403)
         # else:
         user = flask.session['username']
-
+        # mexi.authorization()
     # AUTHENTICATION OVER
 
     text = flask.request.json.get("text", None)

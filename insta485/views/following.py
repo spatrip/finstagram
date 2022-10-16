@@ -32,10 +32,9 @@ def show_following(user_url_slug):
         )
         log = cur2.fetchone()
 
+        logname_follows_user = False
         if log['COUNT(*)'] == 1:
             logname_follows_user = True
-        else:
-            logname_follows_user = False
 
         following['logname_follows_username'] = logname_follows_user
 
