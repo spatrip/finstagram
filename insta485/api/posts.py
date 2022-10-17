@@ -5,7 +5,7 @@ import flask
 import insta485
 
 
-@insta485.app.route('/api/v1/posts/')
+@insta485.app.route('/api/v1/posts/', methods=['GET'])
 def get_ten_posts():
     """Return 10 newest posts."""
     # AUTHENTICATION BEGIN
