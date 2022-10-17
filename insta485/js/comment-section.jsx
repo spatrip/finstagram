@@ -25,7 +25,7 @@ import Comment from "./comment";
 class CommentForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
+    // this.state = { value: "" };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -39,7 +39,7 @@ class CommentForm extends React.Component {
   //   );
 
   handleChange(event) {
-    this.setState({ value: event.target.value });
+    this.props.handleCha(event)
   }
 
   handleSubmit(event) {
@@ -57,16 +57,18 @@ class CommentForm extends React.Component {
     return (
       <div>
         {comments.map((comment) => (
-          <Comment owner={comment.owner} text={comment.text} />
-          // <b>
-          //   {comment.lognameOwnsThis ? {deleteButton} : ''}
-          // </b>
+          // <div>
+            <Comment owner={comment.owner} text={comment.text} />
+          //   <b>
+          //     {comment.lognameOwnsThis ? {deleteButton} : ''}
+          //   </b>
+          // </div>
         ))}
         <form onSubmit={this.handleSubmit}>
           <label>
             <input
               type="text"
-              value={this.state.value}
+              value={this.props.value}
               onChange={this.handleChange}
               id="sparsh"
               className="comment-form"

@@ -18,11 +18,12 @@ class Post extends React.Component {
       imgUrl: "",
       comments: [{ owner: "", text: "" }],
       likes: { lognameLikesThis: null, numLikes: null, url: "" },
+      value: "",
     };
     this.handleLike = this.handleLike.bind(this); //
     this.handleUnlike = this.handleUnlike.bind(this); //
     this.handleSub = this.handleSub.bind(this); //
-    // this.handleCha = this.handleCha.bind(this); //
+    this.handleCha = this.handleCha.bind(this); //
     this.handlePostLike = this.handlePostLike.bind(this); //
   }
 
@@ -113,11 +114,10 @@ class Post extends React.Component {
   }
 
   handleSub(e) {
-    e.preventDefault();
     // e.textContent
     // const sparsh = document.getElementById("sparsh");
-    const textEntered = e.textContent;
-    console.log(textEntered);
+    const textEntered = this.state.value;
+    console.log(textEntered, 'boom');
     const commentText = { text: textEntered };
     fetch(`/api/v1/comments/?postid=${this.state.postid}`, {
       method: "POST", // or 'PUT'
@@ -136,14 +136,15 @@ class Post extends React.Component {
       .catch((error) => {
         console.error("Error:", error);
       });
+      e.preventDefault();
 
     // sparsh.reset()
   }
 
-  // handleCha(e) {
-  //   this.setState({value: e.target.value});
-
-  // }
+  handleCha(e) {
+    console.log("Here handleCha");
+    this.setState({value: e.target.value});
+  }
 
   render() {
     console.log("render ran");
@@ -185,7 +186,11 @@ class Post extends React.Component {
         />
         {/* <CommentSection 
           comments={comments} /> */}
-        <CommentForm comments={comments} />
+        <CommentForm 
+        comments={comments} 
+        value={this.state.value}
+        handleSub={this.handleSub}
+        handleCha={this.handleCha}/>
       </div>
     );
   }
